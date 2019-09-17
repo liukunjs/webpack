@@ -2,6 +2,7 @@ import React,{ Component } from "react";
 import ReactDom from "react-dom"
 import{Route,BrowserRouter} from "react-router-dom";
 import Action from './component'
+let a
  class ReactHome1 extends Component{
  	
  	render(){
