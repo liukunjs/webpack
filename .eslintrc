@@ -1,0 +1,21 @@
+{
+    "env": {
+      "browser": true,
+      "es6": true
+    },
+    "rules": {
+      "eqeqeq": "off",
+      "no-cond-assign": "off",
+      "no-script-url": "off",
+      "jsx-a11y/anchor-has-content": "off",
+      "jsx-a11y/alt-text": "off",
+      "jsx-a11y/anchor-is-valid": "off",
+      "no-empty-pattern": "off"
+    },
+    "globals":{
+      "__defaultImgPrefix__":true,
+      "_global": true,
+      "swan":true,
+      "tt": true
+    }
+  }
