@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[2],{118:function(n,e,t){n.exports={img:"Zj89CI5VI7RqlhKW4TqWV"}},122:function(n,e,t){"use strict";t.r(e);var a=t(118),o=t.n(a);e.default=function(){var n=document.getElementById("root"),e=new Image;e.src="/bear.jpg",e.classList.add(o.a.img),n.appendChild(e)}}}]);

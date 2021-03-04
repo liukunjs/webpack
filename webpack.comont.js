@@ -7,16 +7,31 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // 对css代码分割后进行代码压缩
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const TerserPlugin  = require("terser-webpack-plugin")
+const webpack = require("webpack");
+const { dirname } = require('path');
+const AutoDllPlugin  = require("autodll-webpack-plugin")
+const hardSourceWebpackPlugin = require("hard-source-webpack-plugin")
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
+const happyPack = require("happypack");
+const { loader } = require('./webpack.dev.config');
+const threadLoader  = require("thread-loader")
+// 通过预热提前加载
+threadLoader.warmup({
+},["css-loader"])
 module.exports = {
 	entry:"./src/index.js",
 	module:{
-		rules:[{
+		rules:[{ 
 			test:/\.(jpeg|jpg|png)$/,
 			// use 可以是对象，可以是数组，也可以不使用use 直接 loader 和options
-			use:{
+			use:[
+				{loader:"cache-loader"},
+				{loader:"thread-loader"},
+				{
 				loader:"file-loader",
-				options:{name:"[name].[ext]"}
-			}
+				options:{name:"[name].[ext]",limitP:1024}
+			}]
 		},
 		{
 			test:/\.(css|less)$/,
@@ -24,24 +39,32 @@ module.exports = {
 			// use:["style-loader",
 			// "css-loader"]
 			// 形式二 ：
-			use:[{loader: MiniCssExtractPlugin.loader,},{loader:"css-loader",
-			options:{
-				// 	强制先执行
-				// force:"pre",
-				// 开启模块化方式，不同的css	不能其他的ccs影响
-				 modules:true
-			}}]				
+			use:[
+					// {
+					// 	loader:"thread-loader",
+					// 	options:{}
+					// },
+					{
+						loader: MiniCssExtractPlugin.loader,},{loader:"css-loader",
+						options:{
+							// 	强制先执行
+							// force:"pre",
+							// 开启模块化方式，不同的css	不能其他的ccs影响
+							modules:true
+						}
+					}
+				]				
 		},
 		{
 			test:/\.js$/,
 			exclude:/node_modules/,
-			use:{
+			use:[{
 				// babel-loader 只是提供了一个可以让我们在es6和webpack 建立桥梁的关系，并没有能够打包es6的功能
-				loader:"babel-loader",
+				loader:"happypack/loader?id=babel",
 				// babel-loader 的options 可以放入.babelrc文件中
 				// 打包es6 的功能
 				// // 这个只能编译一下 箭头函数 const 等，但是一些promise，和map函数是不能编译，导致了低版本浏览器会出现兼容问题所以得使用
-				options:{
+				// options:{
 				// 	// presets 里面如果写一个数组的话，第一个要用的presets要用的插件，第二个对象是对当前插件的配置
 				// presets:[["@babel/preset-env",{
 				// 	// 当使用babel-polyfill 时，不会全部编译ES6的全部，只编译当前使用的es6的代码
@@ -55,27 +78,46 @@ module.exports = {
     //   						},
 				// }]]
 
-				}
-			}
+				// }
+			},
+			// {
+			// 	loader:"selfLoader",
+			// 	options:{
+			// 		name:"ldn"
+			// 	}
+			// }
+
+		]
 		}
 		]
 	},
-
+	resolve:{
+		// extensions:[".js","jsx"],
+		// mainFiles:["index.jsx"],
+		alias: {
+			app: path.resolve(__dirname, '../../src/app'),
+			assets: path.resolve(__dirname, '../../src/assets')
+		
+		}
+	},
+	resolveLoader:{modules: [ 'node_modules',"loaderdir" ]},
+	
 	/*
 		可以共享新块或来自该node_modules文件夹的模块
 		新块将大于30kb（在min + gz之前）
 		根据需要加载块时的最大并行请求数将小于或等于5
 		初始页面加载时的最大并行请求数将小于或等于3
 	*/
+	// TerserPlugin // 解决了optimizeCssAssetsPlugi 部分js 文件没有被压缩的场景
 	optimization:{
-    	minimizer: [ new OptimizeCSSAssetsPlugin({})],
+    	minimizer: [new TerserPlugin(),new OptimizeCSSAssetsPlugin({})],
 		// splitChunks:{
 		// // chunks:"all"
 		// // // 
 		// }
 		splitChunks: {
 			// 为打包的方式 all, async, and initial(同步)：同步的方式会看羡慕casheGroups 的配置，然后在进行打包
-      chunks: 'async',
+      chunks: 'all',
       // 小于这个值就不会被代码分割
       minSize: 30000,
       // 这个我们一般不设置，目的是：如果一个文件特别大，设置这个值，如果这个特别大的文件大于这个值，就进行拆包，把这个文件拆分成几个
@@ -103,7 +145,7 @@ module.exports = {
         },
         default: {
         	// 最少被引入的次数
-          minChunks: 2,
+          minChunks: 1,
           // 权重
           priority: -20,
           // 意味当我们在其他文件引入了A文件，我们在另为一个里面又引入A文件，这个我们不会对A重新打包分割，而是复用
@@ -133,5 +175,36 @@ module.exports = {
       filename: 'static/css/[name].css',
       chunkFilename: 'static/css/[name].chunks.css',
     }),
-	]	,
+	new webpack.HotModuleReplacementPlugin(),
+	// new webpack.DllReferencePlugin({
+	// 	// 注意: DllReferencePlugin 的 context 必须和 package.json 的同级目录，要不然会链接失败
+	// 	// context: path.resolve(__dirname, "./"),
+	// 	manifest:path.resolve(__dirname,"dist","manifest.json")
+	// })
+	// new AutoDllPlugin({ // 可以代替复杂的dll 配置
+	// 	inject: true, // 设为 true 就把 DLL bundles 插到 index.html 里
+	// 	filename: '[name].dll.js',
+	// 	// context: path.resolve(__dirname, '../'), // AutoDllPlugin 的 context 必须和 package.json 的同级目录，要不然会链接失败
+	// 	entry: {
+	// 		varnder: [
+	// 			'react',
+	// 			"react-dom"
+	// 		]
+	// 	}
+	// })
+	 new hardSourceWebpackPlugin(),
+	 new SpeedMeasurePlugin(),
+	 new happyPack({
+		 id:"babel", //与上面id 相等
+		 loaders:[{
+			 loader:"babel-loader",
+			 // cacheDirectory 缓存
+		 	options: { babelrc: true, cacheDirectory: true }
+		}],
+		// 为开启的进程数量
+		// threads:3,
+		// 进程池，多个happypack 公用一个进程池以防止资源占用过多浪费
+		// threadPool:happyPack.ThreadPool({ size: require('os').cpus().length })
+	 })
+	]	
 }

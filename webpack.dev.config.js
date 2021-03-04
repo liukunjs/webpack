@@ -1,6 +1,7 @@
 var merge = require("webpack-merge")
 var com = require("./webpack.comont.js")
 var path = require('path')
+const apiMocker = require('mocker-api');
 var dev = {
 	// 设置开发着模式可使打包代码为半解压式,并且develoment 默认不到 tree shacking
 	mode:"development",
@@ -16,6 +17,7 @@ var dev = {
 		// 启动文件的地址
 		contentBase: path.join(__dirname, "dist"),
 		open:true,
+		progress: true,// 进度条现实
 		port:3000,
 		publicPath: "/",
 		// devserver自带 hot 功能，在我们不只修改css时会不刷新页面，不需要下载插件执行
@@ -23,16 +25,22 @@ var dev = {
 		// 这个设置为当我们的hot-module-replacement 功能不启效果时，也能不刷新也，但是我们修改js文件也不回刷新页面
 		// 这个就是很友好，但是可以在js文件中设置代码是否更新然后在判断是否跟新
 		// hotOnly:true
-		host:"192.168.0.102",
+		// host:"192.168.1.9",
 		proxy:{
 			// "/api":{
 			// 	target:"",
 			// }
 			// 写法1: "/api":'localhost:3000'
 			"/api": {
-    			target: "localhost:3000",
-    			// changeOrigin: true,
-    			// secure: false,
+				// 这个地方不能做替换到本地服务，必须是受那个其他的node 在开一个服务，8080端口
+    			target: "http://localhost:8080",
+				// 判断上面的数据如果没有就用下面的接口数据
+				// pathRewrite: {"^/api" : ""} 
+				// 这个参数可以让target参数是域名
+    			changeOrigin: true,
+				//,不检查安全问题。设置后，可以接受运行在 HTTPS 上，可以使用无效证书的后端服务器
+    			secure: false,
+				// 拦截
     			// bypass: function(req, res, proxyOptions) {
     			// 		// console.log(req,7777777)
       	// 			// if (req.headers.accept.indexOf("html") !== -1) {
@@ -47,11 +55,17 @@ var dev = {
 		// 他如果在服务器拿不到的时候会从本地的文件系统拿，为自己开发使用，同理在我们使用多路由的时候就会根据本地 url 在
 		// 本地本地找打文件
 		historyApiFallback: true,
-		// headers:{
-		// 	'Accept': 'application/json',
-      	// 	'Content-Type': 'application/json; charset=utf-8',
-      	// 	"Access-Control-Allow-Origin":"*",
-		// },
+		headers:{
+			'Accept': 'application/json',
+      		'Content-Type': 'text/html; charset=utf-8',
+      		"Access-Control-Allow-Origin":"*",
+		},
+		// 可以做数据模拟
+		   before(app){
+			    app.get("/api/a",function(req,res){
+					res.json({ custom: 'response' });
+				})	
+			   }
 	},
 	optimization:{
 		// 只有在开发环境才需要设置，目的tree shacking,只使用引入的模块打包	

@@ -9,9 +9,15 @@
 import ReactDom from "react-dom"
 import ReactHome from "./react.js"
 ReactHome();
-console.log(1111111111)
-import math  from "lk-ldn-math"
-console.log(math.math,99999999999999)
+window.addEventListener("load",function(){
+    if("serviceWorker" in window.navigator){
+        navigator.serviceWorker.register("sw.js",{scope:"/"}).then((registion)=>{
+            console.log(registion.scope,">>>>>>>>>>>>>>>>>>>>>")
+        })
+    }
+})
+// import math  from "lk-ldn-math"
+// console.log(math.math,99999999999999)
 // tree sharking 概念：摇动树 ，应用场景：esmodule，在使用时只引入了headerTop方法，但是当我们在打包时侯，会把headerTop里面所有的文件
 // 全部引入进去，但在webpack mode 为 productions 的时 devtool： 设置为cheap-moudle-souce-map (不要加eval),并且在package.json中设置
 // 默认使用这‘sideEffects:false’,tree sharking ，把不需要的文件给去除掉，
@@ -33,7 +39,7 @@ add();
    return import(/* webpackChunkName: "lk" */ 'lodash').then(({ default: _ }) => {
      const element = document.createElement('div');
 
-     element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+     element.innerHTML = _.join(['Hello', 'webpack',"lk"], ' ');
 
      return element;
 
@@ -72,18 +78,18 @@ var html = document.getElementById("root")
 // home()
 
 // console.log(React,66)
-import("react").then(react=>{
-	class App extends React.Component {
-	render(){
-		return(
-			<div>
-				wihwewew
-			</div>
-			)
-	}
-}
-ReactDom.render(<App />,document.getElementById("root"))
-})
+// import("react").then(react=>{
+// 	class App extends React.Component {
+// 	render(){
+// 		return(
+// 			<div>
+// 				wihwewew---"lk"
+// 			</div>
+// 			)
+// 	}
+// }
+// ReactDom.render(<App />,document.getElementById("root"))
+// })
 
 
 
