@@ -12,12 +12,10 @@ ReactHome();
 window.addEventListener("load",function(){
     if("serviceWorker" in window.navigator){
         navigator.serviceWorker.register("sw.js",{scope:"/"}).then((registion)=>{
-            console.log(registion.scope,">>>>>>>>>>>>>>>>>>>>>")
         })
     }
 })
 // import math  from "lk-ldn-math"
-// console.log(math.math,99999999999999)
 // tree sharking 概念：摇动树 ，应用场景：esmodule，在使用时只引入了headerTop方法，但是当我们在打包时侯，会把headerTop里面所有的文件
 // 全部引入进去，但在webpack mode 为 productions 的时 devtool： 设置为cheap-moudle-souce-map (不要加eval),并且在package.json中设置
 // 默认使用这‘sideEffects:false’,tree sharking ，把不需要的文件给去除掉，
@@ -25,14 +23,12 @@ window.addEventListener("load",function(){
 // sideEffect:["*.css"]
 // 异步的不需要借助任何插件就可以做到打包，并魔法注释，同步引入必须借助splitChunk
 import(/*webpackChunkName:"ldn"*/"./home/home").then((data)=>{
-	console.log(data)
 })
 import { add } from "./headerTop.js"
 add();
 // 只有通过这个引入的方式才能进入打包的模式，如果只是在js中创建img 的形式,不能进行打包
 // var img = require("./img/bear.jpg")
 // 这个img 是我在webpack 打包配置后的名字，所以会是bear.jpg
-// console.log(img)
 // 虽然我在当前位置没有引入 css 样式，但是发现此时的这个错误的 img 标签已经有了 150宽了
 // 此时出现了css 样式的污染 在css-loader中配置
  function getComponent() {
@@ -55,7 +51,6 @@ document.addEventListener("click",function(){
 	// 当我不想在首屏加载过多东西时，在使用时加载，又怕加载太慢，这时使用预加载webpackPrefetch,在首屏主要的js文件加载后的
 	// 空闲时加去加载这个 header.js文件，如果是webpackPreload ,是和主文件一起加载的
 	import(/* webpackPrefetch: true */  /* webpackChunkName: "preload" */"./header/header").then(()=>{
-		console.log(777777)
 	})
 })
 
@@ -77,7 +72,6 @@ var html = document.getElementById("root")
 // header()
 // home()
 
-// console.log(React,66)
 // import("react").then(react=>{
 // 	class App extends React.Component {
 // 	render(){

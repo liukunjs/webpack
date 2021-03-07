@@ -4,7 +4,10 @@ import{Route,BrowserRouter} from "react-router-dom";
 import Hmr from "./hmr"
 import Action from './component';
 import axios from 'axios';
-
+import Store from "./redux"
+import { Provider } from "react-redux"
+import store from "../store/store"
+console.log(store,"storeeeee")
  class ReactHome1 extends Component{
  	
  	render(){
@@ -30,24 +33,18 @@ import axios from 'axios';
  class ReactHome extends Component{
  	componentDidMount(){
 		axios.get("/api/a").then((res)=>{
- 			console.log(res,"ressss")
  		})
 	const temp = []
 	let i =0
 		function getlist(t){
 			temp.push(t)
-			console.log(temp[0],"temp[0]")
-			console.log(t-3000,"t-300")
-			console.log(temp[0]<t-3000,"bjiao")
 			while(temp[0]<t-3000){
 					i++
 				temp.shift()
 				if(i>100){
-					console.log("sixl")
 					return;
 				}
 			}
-			console.log(temp)
 		}
 		[null,1,100,3000,3001,4000].forEach(item=>{
 			getlist(item)
@@ -59,13 +56,13 @@ import axios from 'axios';
  			   <Route path="/aaa" exact component={ ReactHome1 } />
  			   <Route path="/abc" component={ ReactHome2 } />
  			   <Route path="/hmr" component={  Hmr} />
+ 			   <Route path="/store" component={  Store} />
  			</BrowserRouter>
  		</div>
  	}
  } 
  (function(modules) { 
 	function webpackJsonpCallback(data) {
-		console.log(data,"data")
 		var chunkIds = data[0];
 		var moreModules = data[1];
 		var moduleId, chunkId, i = 0, resolves = [];
@@ -205,7 +202,6 @@ import axios from 'axios';
 ([
 (function(module, exports, __webpack_require__) {
 const a = __webpack_require__.e(/* import() | aCom */ 0).then(__webpack_require__.t.bind(null, 1, 7)).then(item => {
-  console.log(11123, item);
 });
  })
 ]);
@@ -214,9 +210,7 @@ const a = __webpack_require__.e(/* import() | aCom */ 0).then(__webpack_require_
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-console.log("aaaaaaaaa");
 const a = __webpack_require__.e(/* import() | bCom */ 1).then(__webpack_require__.t.bind(null, 2, 7)).then(item => {
-console.log(11123, item);
 });
 
 /***/ })
@@ -232,5 +226,9 @@ console.log(11123, item);
 
 }]);
  export default function (){
- 	ReactDom.render(<ReactHome/>,document.getElementById("root"))
+ 	ReactDom.render(
+	 <Provider store={store}>
+		 <ReactHome/>
+	  </Provider>
+	 ,document.getElementById("root"))
  }

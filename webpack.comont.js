@@ -20,14 +20,14 @@ const threadLoader  = require("thread-loader")
 threadLoader.warmup({
 },["css-loader"])
 module.exports = {
-	entry:"./src/index.js",
+	entry:["./src/index.js","./src/dom/index.js"],
 	module:{
 		rules:[{ 
 			test:/\.(jpeg|jpg|png)$/,
 			// use 可以是对象，可以是数组，也可以不使用use 直接 loader 和options
 			use:[
-				{loader:"cache-loader"},
-				{loader:"thread-loader"},
+				// {loader:"cache-loader"},
+				// {loader:"thread-loader"},
 				{
 				loader:"file-loader",
 				options:{name:"[name].[ext]",limitP:1024}
@@ -60,7 +60,8 @@ module.exports = {
 			exclude:/node_modules/,
 			use:[{
 				// babel-loader 只是提供了一个可以让我们在es6和webpack 建立桥梁的关系，并没有能够打包es6的功能
-				loader:"happypack/loader?id=babel",
+				// loader:"happypack/loader?id=babel", // 
+				loader:"babel-loader"
 				// babel-loader 的options 可以放入.babelrc文件中
 				// 打包es6 的功能
 				// // 这个只能编译一下 箭头函数 const 等，但是一些promise，和map函数是不能编译，导致了低版本浏览器会出现兼容问题所以得使用
@@ -192,19 +193,19 @@ module.exports = {
 	// 		]
 	// 	}
 	// })
-	 new hardSourceWebpackPlugin(),
-	 new SpeedMeasurePlugin(),
-	 new happyPack({
-		 id:"babel", //与上面id 相等
-		 loaders:[{
-			 loader:"babel-loader",
-			 // cacheDirectory 缓存
-		 	options: { babelrc: true, cacheDirectory: true }
-		}],
+	//  new hardSourceWebpackPlugin(),
+	 new SpeedMeasurePlugin()
+	//  new happyPack({
+	// 	 id:"babel", //与上面id 相等
+	// 	 loaders:[{
+	// 		 loader:"babel-loader",
+	// 		 // cacheDirectory 缓存
+	// 	 	options: { babelrc: true, cacheDirectory: true }
+	// 	}],
 		// 为开启的进程数量
 		// threads:3,
 		// 进程池，多个happypack 公用一个进程池以防止资源占用过多浪费
 		// threadPool:happyPack.ThreadPool({ size: require('os').cpus().length })
-	 })
+	//  }
 	]	
 }

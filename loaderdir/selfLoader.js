@@ -3,7 +3,6 @@
      // 1 这里面不能使用箭头函数，应为，他的所有传参都是通过this 指向绑定的
      // 2 这里的source 是一个打包后的文件，必须修改完后return 回去
     const params = loaderUilts.getOptions(this)
-    console.log(params)
     // this.callback(
     //     err: Error | null,
     //     content: string | Buffer,

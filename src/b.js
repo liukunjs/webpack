@@ -132,7 +132,6 @@
     ([(function (module, exports, __webpack_require__) {
 
         const a = __webpack_require__.e(/* import() | aCom */ 0).then(__webpack_require__.t.bind(null, 1, 7)).then(item => {
-            console.log(11123);
         });
     })
     ]);
