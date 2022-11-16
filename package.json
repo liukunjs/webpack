@@ -51,7 +51,7 @@
     "hard-source-webpack-plugin": "^0.13.1",
     "less-loader": "^5.0.0",
     "lk-ldn-math": "^1.0.0",
-    "loader-utils": "^2.0.0",
+    "loader-utils": "^2.0.4",
     "mocker-api": "^2.8.1",
     "path": "^0.12.7",
     "react-redux": "^7.2.2",
